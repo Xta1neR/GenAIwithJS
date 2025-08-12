@@ -66,20 +66,6 @@ GenAIwithJS/
 ├── Project_01-Emotocode/ # First hands-on project
 └── README.md # This file
 
----
-
-## 📊 GitHub Activity
-
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=Xta1neR&show_icons=true&theme=radical" height="150" />
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Xta1neR&layout=compact&theme=radical" height="150" />
-</p>
-
-<p align="center">
-  <img src="https://streak-stats.demolab.com?user=Xta1neR&theme=radical&hide_border=true" height="150" />
-</p>
-
----
 
 ## 🏆 Goals
 
