@@ -50,18 +50,6 @@ Rather than deep mathematical theory, the goal is **to build, deploy, and iterat
 
 ---
 
-## 📅 Progress Tracking
-
-| Module                  | Progress |
-|-------------------------|----------|
-| LLM Basics              | ![Done](https://progress-bar.dev/100/?title=Done) |
-| AI Agents               | ![In Progress](https://progress-bar.dev/80/?title=In%20Progress) |
-| LangChain Apps          | ![Learning](https://progress-bar.dev/60/?title=Learning) |
-| RAG & Vector Databases  | ![Upcoming](https://progress-bar.dev/30/?title=Upcoming) |
-| Multi-Modal AI          | ![Pending](https://progress-bar.dev/0/?title=Pending) |
-
----
-
 ## 💡 Hands-On Projects
 
 1. **[Emotocode](https://github.com/Xta1neR/GenAIwithJS/tree/main/Project_01-Emotocode)** — Emotion-based response generator in JavaScript.  
@@ -77,10 +65,6 @@ GenAIwithJS/
 ├── Day 01/ # Intro and basics
 ├── Project_01-Emotocode/ # First hands-on project
 └── README.md # This file
-
-yaml
-Copy
-Edit
 
 ---
 
