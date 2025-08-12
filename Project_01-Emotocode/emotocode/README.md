@@ -24,41 +24,18 @@ Built with **Next.js**, styled with **Tailwind CSS**, and enhanced with **Framer
 
 -  **Real-time conversion** — Type text and instantly see the emoji output.
 -  **Copy to clipboard** — One-click to copy your Emotocode for pasting anywhere.
--  **Download as image** — Export your emoji text as a high-quality PNG.
 -  **Interactive UI** — Hover effects and animations make it feel alive.
 -  **Color-coded theme** — Dark, moody backdrop with mint & blue accents for contrast.
 
----
-
-##  Project Structure
-
-emotocode/
-├── app/ or pages/ # Next.js routing (depending on Next.js version)
-├── data/
-│ └── emojiMap.js # A–Z emoji mapping
-├── components/
-│ ├── Header.js # App header and controls
-│ └── GlyphDisplay.js # Emoji display component
-├── public/
-│ └── logo.svg # App logo
-├── styles/
-│ └── globals.css # Tailwind & global styles
-├── tailwind.config.js # Tailwind setup
-└── package.json # Project dependencies & scripts
-
-yaml
-Copy
-Edit
 
 ---
 
 ##  Usage Guide
 
-1. Visit the live site: [axa1ners-projects/emotocode.vercel.app](https://xta1ners-projects-emotocode.vercel.app)  
-2. Type your message into the left pane.  
-3. Watch it auto-convert to emojis in the right pane.  
-4. Click **Copy** to copy emojis to clipboard.  
-5. Click **Download** to export as an image.
+1. Visit the live site: [https://emotocode.vercel.app/](https://emotocode.vercel.app/)  
+2. Type your message into the input panel.  
+3. Watch it auto-convert to emojis in the output pane.  
+4. Click **Copy** to copy emojis to clipboard.
 
 ---
 
@@ -88,6 +65,7 @@ Emotocode can be used to:
 -  Add light/dark theme toggle or alternative emoji sets.
 -  Allow SVG export for scalable sharing.
 -  Add shareable links that store the original text in the URL.
+-  Convert Emotocode to Text.
 
 ---
 
