@@ -1,5 +1,4 @@
 'use client'
-// pages/index.js
 import { useState, useRef } from "react";
 import { emojiMap } from "../data/emojiMap";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,11 +6,31 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function Home() {
   const [text, setText] = useState("");
   const [glyphs, setGlyphs] = useState([]);
+  const [decodedText, setDecodedText] = useState("");
   const outputRef = useRef();
 
+  // Create reverse mapping: emoji -> letter
+  const reverseEmojiMap = Object.fromEntries(
+    Object.entries(emojiMap).map(([letter, emoji]) => [emoji, letter])
+  );
+
+  // Convert text to emojis
   const convert = (t) => {
-    const arr = t.toUpperCase().split("").map(ch => emojiMap[ch] || (ch === " " ? " " : "" ));
-    setGlyphs(arr.filter((g, i) => g !== ""));
+    const arr = t
+      .toUpperCase()
+      .split("")
+      .map((ch) => emojiMap[ch] || (ch === " " ? " " : ""));
+    setGlyphs(arr.filter((g) => g !== ""));
+  };
+
+  // Decode emojis back to text
+  const decode = (emojiString) => {
+    const decoded = emojiString
+      .split(/(\p{Emoji}|\s)/u) // split by emoji and spaces
+      .filter(Boolean)
+      .map((symbol) => reverseEmojiMap[symbol] || (symbol === " " ? " " : ""))
+      .join("");
+    setDecodedText(decoded);
   };
 
   const handleInput = (e) => {
@@ -20,14 +39,21 @@ export default function Home() {
     convert(val);
   };
 
+  const handleDecodeInput = (e) => {
+    decode(e.target.value);
+  };
+
   const handleCopy = async () => {
     const outText = glyphs.join("");
     await navigator.clipboard.writeText(outText);
     alert("Copied emotocode!");
   };
 
-
-  const clearAll = () => { setText(""); setGlyphs([]); };
+  const clearAll = () => {
+    setText("");
+    setGlyphs([]);
+    setDecodedText("");
+  };
 
   return (
     <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-b from-[#071029] to-[#061022]">
@@ -40,7 +66,7 @@ export default function Home() {
             </svg>
             <div>
               <h1 className="text-xl font-semibold">Emotocode</h1>
-              <p className="text-sm text-white/60">Turn text into a memorable emoji language</p>
+              <p className="text-sm text-white/60">Turn text ↔ emoji language</p>
             </div>
           </div>
 
@@ -50,14 +76,15 @@ export default function Home() {
           </div>
         </header>
 
-        <div className=" grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-2">
+            {/* Encoding */}
             <label className="block text-sm mb-2">Type your message</label>
             <textarea
               value={text}
               onChange={handleInput}
               placeholder="Type something like: Hello world"
-              rows={6}
+              rows={4}
               className="w-full p-4 rounded-lg bg-[#06182b] border border-white/6 placeholder:text-white/40 resize-none"
             />
 
@@ -84,13 +111,28 @@ export default function Home() {
                 </AnimatePresence>
               </div>
             </div>
+
+            {/* Decoding */}
             <hr className="my-4 border-white/5" />
+            <label className="block text-sm mb-2">Want to Decode Your message ?</label>
+            <textarea
+              onChange={handleDecodeInput}
+              placeholder="Paste emoji code here"
+              rows={3}
+              className="w-full p-4 rounded-lg bg-[#06182b] border border-white/6 placeholder:text-white/40 resize-none"
+            />
+            {decodedText && (
+              <div className="mt-2 p-3 bg-black/20 rounded border border-white/5 text-sm">
+                Decoded text: <span className="font-mono">{decodedText}</span>
+              </div>
+            )}
+            <hr className="my-2 border-white/5" />
           </div>
 
+          {/* Legend */}
           <aside className="p-4 rounded-lg bg-[#061726] border border-white/5">
             <h3 className="font-medium">Legend</h3>
             <p className="text-sm text-white/60 mb-4">A quick lookup for A–Z mapping</p>
-
             <div className="grid grid-cols-3 gap-2 text-lg">
               {Object.entries(emojiMap).map(([k, v]) => (
                 <div key={k} className="flex items-center gap-2 text-sm p-2 rounded hover:bg-white/3">
@@ -98,10 +140,6 @@ export default function Home() {
                   <div className="text-xs">{k}</div>
                 </div>
               ))}
-            </div>
-
-            <div className="mt-4">
-              <p className="text-sm text-white/50">Share & experiment — turn your tweets, bios, or messages into emoji art.</p>
             </div>
           </aside>
         </div>

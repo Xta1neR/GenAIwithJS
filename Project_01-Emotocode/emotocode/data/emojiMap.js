@@ -26,3 +26,8 @@ export const emojiMap = {
   Y: "🪀", 
   Z: "🦓"
 };
+
+// Reverse map for decoding
+export const textMap = Object.fromEntries(
+  Object.entries(emojiMap).map(([key, value]) => [value, key])
+);
