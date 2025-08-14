@@ -1,17 +1,19 @@
-// app/chat/[personaId]/page.tsx
+"use client";
 
-"use client"; // <--- IMPORTANT: This makes it a Client Component
-
-import { useState } from 'react'; // Import useState hook
+import { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, Globe, Linkedin, SendHorizonal, Twitter, Youtube } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { personas } from '@/lib/persona';
+import ReactMarkdown from 'react-markdown';
+import Image from 'next/image';
 
-// Define the structure for a chat message
+interface MessagePart {
+  text: string;
+}
+
 interface Message {
   role: 'user' | 'model';
-  text: string;
+  parts: MessagePart[];
 }
 
 type PersonaId = keyof typeof personas;
@@ -20,94 +22,123 @@ export default function ChatPage({ params }: { params: { personaId: PersonaId } 
   const { personaId } = params;
   const persona = personas[personaId];
 
+  const [language, setLanguage] = useState('en');
 
   const [input, setInput] = useState('');
-  
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: `Hello Ji, I am ${persona?.name}.  Bataiye kya baat hai ?` }
+    { role: 'model', parts: [{ text: `Hello Ji, I am ${persona?.name}. ` }] }
   ]);
-  
   const [isLoading, setIsLoading] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to the latest message
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent page refresh
-    if (!input.trim() || isLoading) return; // Don't send empty messages or while loading
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
 
-    const userMessage: Message = { role: 'user', text: input };
-    setMessages(prev => [...prev, userMessage]); // Add user's message to the chat
-    setInput(''); // Clear the input field
-
+    const userMessage: Message = { role: 'user', parts: [{ text: input }] };
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    setInput('');
     setIsLoading(true);
-    setTimeout(() => {
-        const modelResponse: Message = { role: 'model', text: "This is a simulated response. We'll connect the AI next!"};
-        setMessages(prev => [...prev, modelResponse]);
-        setIsLoading(false);
-    }, 1500);
+
+    try {
+      // API call to our backend route
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: newMessages,
+          personaId: personaId,
+          language: language
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get response from AI');
+      }
+
+      const data = await response.json();
+      const modelMessage: Message = { role: 'model', parts: [{ text: data.text }] };
+
+      setMessages(prev => [...prev, modelMessage]);
+
+    } catch (error) {
+      console.error(error);
+      const errorMessage: Message = { role: 'model', parts: [{ text: "Oops! Something went wrong. Please try again." }] };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  if (!persona) {
-    return <div>Persona Not Found</div>
-  }
 
   return (
     <div className="bg-[#121212] text-white min-h-screen font-sans">
       <div className="grid grid-cols-1 lg:grid-cols-3 h-screen">
-        
-        {/* Left Column remains the same */}
         <aside className="hidden lg:flex lg:col-span-1 bg-[#1a1a1a] p-8 flex-col items-center justify-center gap-8 border-r border-gray-700">
-          <Link href="/" className="absolute top-4 left-4 flex items-center gap-2 text-gray-400 hover:text-white">
-            <ChevronLeft size={20} />
-            <span>Back</span>
-          </Link>
-          <div className="w-48 h-48 relative"><div className="w-full h-full rounded-full bg-gray-600"></div></div>
-          <h1 className="text-3xl font-bold">{persona.name}</h1>
+          <Link href="/" className="absolute top-4 left-4 flex items-center gap-2 text-gray-400 hover:text-white"><ChevronLeft size={20} /><span>Back</span></Link>
+          <div className="w-48 h-48 relative">
+            <Image
+              src={persona?.imageUrl}
+              alt={persona?.name}
+              layout="fill"
+              className="rounded-full"
+            />
+          </div>
+          <h1 className="text-3xl font-bold">{persona?.name}</h1>
           <div className="flex items-center gap-6">
-            <a href={persona.socials.youtube} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white"><Youtube size={28}/></a>
-            <a href={persona.socials.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white"><Twitter size={28}/></a>
-            <a href={persona.socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white"><Linkedin size={28}/></a>
-            <a href={persona.socials.portfolio} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white"><Globe size={28}/></a>
+            <a href={persona?.socials.youtube} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white"><Youtube size={28} /></a>
+            <a href={persona?.socials.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white"><Twitter size={28} /></a>
+            <a href={persona?.socials.linkedin} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white"><Linkedin size={28} /></a>
+            <a href={persona?.socials.portfolio} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white"><Globe size={28} /></a>
           </div>
         </aside>
-
-        {/* ======== Right Column: Chat Interface ======== */}
         <main className="lg:col-span-2 flex flex-col h-screen">
+
+          <header className="flex items-center justify-between p-4 border-b border-gray-700">
+            <h2 className="text-xl font-bold">Chat</h2>
+
+            <div className="flex items-center gap-2">
+              <label htmlFor="language" className="text-white">
+                Select language
+              </label>
+              <select
+                id="language"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                className="bg-[#2a2a2a] text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="en">English</option>
+                <option value="hi_en">Hindi</option>
+              </select>
+            </div>
+          </header>
+
+
           <div className="flex-grow p-6 overflow-y-auto">
-            {/* DYNAMICALLY RENDER MESSAGES */}
             <div className="flex flex-col gap-4">
               {messages.map((msg, index) => (
-                <div 
-                  key={index} 
-                  className={`p-3 rounded-lg max-w-lg ${
-                    msg.role === 'user' 
-                      ? 'bg-purple-600 self-end' 
-                      : 'bg-[#2a2a2a] self-start'
-                  }`}
-                >
-                  <p>{msg.text}</p>
+                <div key={index} className={`p-3 rounded-lg max-w-lg ${msg.role === 'user' ? 'bg-purple-600 self-end' : 'bg-[#2a2a2a] self-start'}`}>
+                  <div className="prose prose-invert prose-p:my-0 prose-headings:my-0">
+                    <ReactMarkdown>
+                      {msg.parts[0].text}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               ))}
-              {isLoading && (
-                 <div className="p-3 bg-[#2a2a2a] rounded-lg self-start">
-                    <p className="animate-pulse">Thinking...</p>
-                 </div>
-              )}
+              {isLoading && (<div className="p-3 bg-[#2a2a2a] rounded-lg self-start"><p className="animate-pulse">Thinking...</p></div>)}
+              <div ref={chatEndRef} />
             </div>
           </div>
-
-          {/* Message Input Form */}
           <div className="p-4 border-t border-gray-700">
             <form onSubmit={handleSendMessage} className="flex items-center gap-4">
-              <input
-                type="text"
-                placeholder={`Message ${persona.name}...`}
-                className="flex-grow p-3 bg-[#2a2a2a] rounded-lg focus:outline-none"
-                autoComplete="off"
-                value={input} // Bind input value to state
-                onChange={(e) => setInput(e.target.value)} // Update state on change
-                disabled={isLoading} // Disable input while AI is "thinking"
-              />
-              <button type="submit" className="bg-purple-600 p-3 rounded-full hover:bg-purple-700 transition-colors disabled:opacity-50" disabled={isLoading}>
-                <SendHorizonal size={20} />
-              </button>
+              <input type="text" placeholder={`Message ${persona?.name}...`} className="flex-grow p-3 bg-[#2a2a2a] rounded-lg focus:outline-none" autoComplete="off" value={input} onChange={(e) => setInput(e.target.value)} disabled={isLoading} />
+              <button type="submit" className="bg-purple-600 p-3 rounded-full hover:bg-purple-700 transition-colors disabled:opacity-50" disabled={isLoading}><SendHorizonal size={20} /></button>
             </form>
           </div>
         </main>
