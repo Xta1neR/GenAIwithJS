@@ -20,14 +20,14 @@ export default function HomePage() {
           <h1 className="text-xl md:text-3xl font-bold tracking-[0.2em]">SHADOW AI</h1>
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com/Xta1neR/GenAIwithJS/tree/main/Project_02-ShadowAi"
+              href="https://github.com/Xta1neR/GenAIwithJS/tree/main/Project_02-ShadowAi" target="_blank"
               aria-label="GitHub Repository"
               className="hover:text-gray-300"
             >
               <Github size={24} />
             </a>
             <a
-              href="https://xta1ner.github.io/portfolio-website/"
+              href="https://xta1ner.github.io/portfolio-website/" target="_blank"
               className="text-sm font-semibold border px-3 py-1 rounded-md hover:bg-white hover:text-black transition-colors"
             >
               VISIT MY PORTFOLIO

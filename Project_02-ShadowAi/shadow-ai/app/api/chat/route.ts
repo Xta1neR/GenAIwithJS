@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     });
     
     const chat = model.startChat({
-      history: history, // Use the cleaned history
+      history: history,
     });
 
     const result = await chat.sendMessage(latestMessage);

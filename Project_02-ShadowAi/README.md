@@ -95,7 +95,7 @@ shadow-ai/
 │   │       └── page.tsx      # Dynamic chat page component
 │   └── page.tsx              # Homepage
 ├── lib/
-│   └── personas.ts           # Data and system prompts for all personas
+│   └── personas.ts           # Data and system prompts for all personas, THE PERSONA PROMPTS
 ├── public/
 │   └── ...                   # Static assets
 └── tailwind.config.ts        # Tailwind CSS configuration
