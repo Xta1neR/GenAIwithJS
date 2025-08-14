@@ -1,8 +1,5 @@
-// tailwind.config.ts
-
-import type { Config } from 'tailwindcss'
-
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -10,11 +7,16 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // ... your theme extensions
+      animation: {
+        'float': 'float 6s ease-in-out infinite',
+      },
+      keyframes: {
+        float: {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        }
+      }
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'), 
-  ],
+  plugins: [],
 }
-export default config
