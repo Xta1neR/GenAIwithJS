@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { personas } from '@/lib/persona';
 import ReactMarkdown from 'react-markdown';
 import Image from 'next/image';
+import React from "react";
 
 interface MessagePart {
   text: string;
@@ -19,12 +20,12 @@ interface Message {
 
 type PersonaId = keyof typeof personas;
 
-export default function ChatPage({ params }: { params: { personaId: PersonaId } }) {
-  const { personaId } = params;
+
+export default function ChatPage({ params }: { params: Promise<{ personaId: PersonaId }> }) {
+  const { personaId } = React.use(params);
   const persona = personas[personaId];
 
   const [language, setLanguage] = useState('en');
-
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     { role: 'model', parts: [{ text: `Hello Ji, I am ${persona?.name}. ` }] }
